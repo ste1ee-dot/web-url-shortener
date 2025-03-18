@@ -10,7 +10,7 @@ It allows users to enter a long Url, which will then be wrapped into a shorter o
 To run it, from projects directory do
 
 ```bash
-  go run .
+go run .
 ```
 ## Packages used
 
