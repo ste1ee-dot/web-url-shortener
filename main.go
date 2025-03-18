@@ -10,6 +10,15 @@ import (
 	"time"
 )
 
+// Set your domain and csv path here:
+const domain = "localhost"
+const port = "8080"
+
+const csvPath = "data.csv"
+// Maximum lenght of shortened url path
+const keyLength = 6
+
+
 type Data struct {
 	Url string
 }
@@ -19,8 +28,7 @@ type Link struct {
 	Url string `csv:"url"`
 }
 
-const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-const keyLength = 6
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 func generateShortKey() string {
     rand.Seed(time.Now().UnixNano())
@@ -38,7 +46,7 @@ func init() {
 }
 
 func loadUrls(links *[]Link) {
-	file, err := os.Open("data.csv")
+	file, err := os.Open(csvPath)
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +69,7 @@ func loadUrls(links *[]Link) {
 }
 
 func addUrl(shortUrl string, url string) {
-	file, err := os.OpenFile("data.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(csvPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -108,7 +116,7 @@ func main() {
 		links = append(links, link)
 
 		tpl.ExecuteTemplate(w, "shorten.gohtml", Data{
-			Url: "localhost:8080/" + shortUrl,
+			Url: domain + ":" + port + "/" + shortUrl,
 
 		})
 	})
@@ -118,10 +126,10 @@ func main() {
 	})
 
 	server := http.Server{
-		Addr: ":8080",
+		Addr: ":" + port,
 		Handler: router,
 	}
-	log.Println("Starting server on port :8080")
+	log.Println("Starting server on port :" + port)
 	server.ListenAndServe()
 }
 
